@@ -4120,7 +4120,83 @@ const SS_PATCH: {[name: string]: DeepPartial<MoveData>} = {
   'Zing Zap': {maxPower: 130},
 };
 
-const SS: {[name: string]: MoveData} = extend(true, {}, SM, SS_PATCH);
+const PLA_PATCH: {[name: string]: DeepPartial<MoveData>} = {
+  'Dire Claw': {
+    bp: 85,
+    category: 'Physical',
+    type: 'Poison',
+    secondaries: true,
+    makesContact: true,
+  },
+  'Psyshield Bash': {
+    bp: 100,
+    category: "Special",
+    type: "Psychic",
+    secondaries: true,
+    makesContact: true,
+  },
+  'Stone Axe': {
+    bp: 85,
+    type: "Rock",
+    makesContact: true,
+    secondaries: true,
+  },
+  'Raging Fury': {bp: 90, type: 'Fire', category: 'Physical'},
+  "Wave Crash": {bp: 75, type: 'Water', category: "Physical", secondaries: true},
+  'Chloroblast': {
+    bp: 145,
+    type: "Grass",
+    category: "Special",
+  },
+  "Mountain Gale": {bp: 100, type: "Ice", makesContact: true, category: "Physical"},
+  "Victory Dance": {bp: 0, type: "Grass", category: "Status"},
+  "Headlong Rush": {bp: 120, type: "Ground", category: "Physical", makesContact: true},
+  "Barb Barrage": {
+    bp: 60,
+    type: "Poison",
+    category: "Physical",
+    secondaries: true,
+    makesContact: true,
+  },
+  'Esper Wing': {
+    bp: 75,
+    type: 'Psychic',
+    drain: [3, 4],
+    category: 'Special',
+  },
+  'Bitter Malice': {
+    bp: 30,
+    type: 'Ghost',
+    multihit: 2,
+    secondaries: true,
+    category: 'Special',
+  },
+  'Shelter': {bp: 0, category: 'Status', type: 'Steel'},
+  'Triple Arrows': {
+    bp: 25,
+    multihit: 3,
+    priority: 1,
+    type: 'Fighting',
+    category: "Physical",
+  },
+  'Infernal Parade': {
+    bp: 80,
+    type: 'Ghost',
+    category: 'Special',
+    defensiveCategory: 'Physical',
+  },
+  'Ceaseless Edge': {bp: 95, type: "Dark", category: 'Physical', makesContact: true},
+  "Springtide Storm": {bp: 100, type: "Fairy", category: "Special", secondaries: true},
+  "Wildbolt Storm": {bp: 100, type: "Electric", category: "Special", secondaries: true},
+  "Bleakwing Storm": {bp: 100, type: "Flying", category: "Special", secondaries: true},
+  "Sandsear Storm": {bp: 100, type: "Ground", category: "Special", secondaries: true},
+  "Lunar Blessing": {bp: 0, category: "Status", type: "Psychic"},
+  "Take Heart": {bp: 0, category: "Status", type: "Water"},
+  "Power Shift": {bp: 0, category: "Status", type: "Water"},
+  "Mystical Power": {bp: 70, category: "Special", type: "Psychic", secondaries: true}
+
+};
+const SS: {[name: string]: MoveData} = extend(true, {}, SM, SS_PATCH, PLA_PATCH);
 
 const LGPE_MOVES = [
   'Baddy Bad',

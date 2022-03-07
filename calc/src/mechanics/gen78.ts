@@ -236,6 +236,7 @@ export function calculateSMSS(
   const type2Effectiveness = defender.types[1]
     ? getMoveEffectiveness(gen, move, defender.types[1], isGhostRevealed, field.isGravity)
     : 1;
+    
   let typeEffectiveness = type1Effectiveness * type2Effectiveness;
 
   if (typeEffectiveness === 0 && move.named('Thousand Arrows')) {
@@ -244,6 +245,14 @@ export function calculateSMSS(
     defender.hasItem('Iron Ball') && !defender.hasAbility('Klutz')) {
     typeEffectiveness = 1;
   } else if (typeEffectiveness === 0 && defender.hasItem('Ring Target')) {
+    const effectiveness = gen.types.get(toID(move.type))!.effectiveness;
+    if (effectiveness[defender.types[0]]! === 0) {
+      typeEffectiveness = type2Effectiveness;
+    } else if (defender.types[1] && effectiveness[defender.types[1]]! === 0) {
+      typeEffectiveness = type1Effectiveness;
+    }
+  }
+  if (typeEffectiveness === 0 && move.named('Barb Barrage')) {
     const effectiveness = gen.types.get(toID(move.type))!.effectiveness;
     if (effectiveness[defender.types[0]]! === 0) {
       typeEffectiveness = type2Effectiveness;
@@ -377,7 +386,7 @@ export function calculateSMSS(
   // #region (Special) Attack
   const attack = calculateAttackSMSS(gen, attacker, defender, move, field, desc, isCritical);
   const attackSource = move.named('Foul Play') ? defender : attacker;
-  if (move.named('Photon Geyser', 'Light That Burns The Sky')) {
+  if (move.named('Photon Geyser', 'Light That Burns The Sky', 'Psyshield Bash')) {
     move.category = attackSource.stats.atk > attackSource.stats.spa ? 'Physical' : 'Special';
   }
   const attackStat =
@@ -430,6 +439,8 @@ export function calculateSMSS(
   ) {
     return result;
   }
+  
+
 
   if (hasTerrainSeed(defender) &&
     field.hasTerrain(defender.item!.substring(0, defender.item!.indexOf(' ')) as Terrain) &&
@@ -571,6 +582,11 @@ export function calculateBasePowerSMSS(
   let basePower: number;
 
   switch (move.name) {
+  case "Stone Axe": 
+    const sand = field.hasWeather('Sand');
+    basePower = move.bp * (sand ? 1.2 : 1);
+    desc.moveBP = basePower;
+    break;
   case 'Payback':
     basePower = move.bp * (turnOrder === 'last' ? 2 : 1);
     desc.moveBP = basePower;
@@ -606,6 +622,8 @@ export function calculateBasePowerSMSS(
     desc.moveBP = basePower;
     break;
   case 'Hex':
+  case "Bitter Malice":
+  case "Barb Barrage":
     // Hex deals double damage to Pokemon with Comatose (ih8ih8sn0w)
     basePower = move.bp * (defender.status || defender.hasAbility('Comatose') ? 2 : 1);
     desc.moveBP = basePower;
@@ -954,7 +972,7 @@ export function calculateAttackSMSS(
 ) {
   let attack: number;
   const attackSource = move.named('Foul Play') ? defender : attacker;
-  if (move.named('Photon Geyser', 'Light That Burns The Sky')) {
+  if (move.named('Photon Geyser', 'Light That Burns The Sky', 'Psyshield Bash')) {
     move.category = attackSource.stats.atk > attackSource.stats.spa ? 'Physical' : 'Special';
   }
   const attackStat =
