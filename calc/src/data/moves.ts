@@ -4188,7 +4188,7 @@ const PLA_PATCH: {[name: string]: DeepPartial<MoveData>} = {
     bp: 80,
     type: 'Ghost',
     category: 'Special',
-    defensiveCategory: 'Physical',
+    overrideDefensiveStat: 'def',
   },
   'Ceaseless Edge': {bp: 95, type: "Dark", category: 'Physical', makesContact: true},
   "Springtide Storm": {bp: 100, type: "Fairy", category: "Special", secondaries: true},
