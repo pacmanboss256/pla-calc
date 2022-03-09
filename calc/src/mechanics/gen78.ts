@@ -1,4 +1,4 @@
-﻿import {Generation, AbilityName, StatName, Terrain} from '../data/interface';
+﻿import {Generation, AbilityName, StatID, Terrain} from '../data/interface';
 import {toID} from '../util';
 import {
   getBerryResistType,
@@ -350,11 +350,13 @@ export function calculateSMSS(
   }
 
   if (move.named('Spectral Thief')) {
-    let stat: StatName;
+    let stat: StatID;
     for (stat in defender.boosts) {
       if (defender.boosts[stat]) {
         attacker.boosts[stat] +=
           attacker.hasAbility('Contrary') ? -defender.boosts[stat]! : defender.boosts[stat]!;
+        if (attacker.boosts[stat] > 6) attacker.boosts[stat] = 6;
+        if (attacker.boosts[stat] < -6) attacker.boosts[stat] = -6;
         attacker.stats[stat] = getModifiedStat(attacker.rawStats[stat]!, attacker.boosts[stat]!);
       }
     }
@@ -402,7 +404,7 @@ export function calculateSMSS(
   // #region (Special) Defense
 
   const defense = calculateDefenseSMSS(gen, attacker, defender, move, field, desc, isCritical);
-  const hitsPhysical = move.defensiveCategory === 'Physical' ||
+  const hitsPhysical = move.overrideDefensiveStat === 'def' || move.category === 'Physical' ||
     (move.named('Shell Side Arm') && getShellSideArmCategory(attacker, defender) === 'Physical');
   const defenseStat = hitsPhysical ? 'def' : 'spd';
 
@@ -781,7 +783,8 @@ export function calculateBPModsSMSS(
     (defender.name.includes('Silvally') && defender.item.includes('Memory')) ||
     defender.item.includes(' Z') ||
     (defender.named('Zacian') && defender.hasItem('Rusted Sword')) ||
-    (defender.named('Zamazenta') && defender.hasItem('Rusted Shield'));
+    (defender.named('Zamazenta') && defender.hasItem('Rusted Shield') ||
+    (defender.named('Venomicon-Epilogue') && defender.hasItem('Vile Vial')));
 
   // The last case only applies when the Pokemon has the Mega Stone that matches its species
   // (or when it's already a Mega-Evolution)
@@ -797,8 +800,13 @@ export function calculateBPModsSMSS(
   ) {
     bpMods.push(8192);
     desc.moveBP = basePower * 2;
+  } else if (
+    move.named('Expanding Force') && isGrounded(attacker, field) && field.hasTerrain('Psychic')
+  ) {
+    move.target = 'allAdjacentFoes';
+    bpMods.push(6144);
+    desc.moveBP = basePower * 1.5;
   } else if ((move.named('Knock Off') && !resistedKnockOffDamage) ||
-    (move.named('Expanding Force') && isGrounded(attacker, field) && field.hasTerrain('Psychic')) ||
     (move.named('Misty Explosion') && isGrounded(attacker, field) && field.hasTerrain('Misty')) ||
     (move.named('Grav Apple') && field.isGravity)
   ) {
@@ -944,6 +952,9 @@ export function calculateBPModsSMSS(
     (attacker.hasItem('Griseous Orb') &&
      attacker.named('Giratina-Origin') &&
      move.hasType('Ghost', 'Dragon')) ||
+    (attacker.hasItem('Vile Vial') &&
+     attacker.named('Venomicon-Epilogue') &&
+     move.hasType('Poison', 'Flying')) ||
     (attacker.hasItem('Soul Dew') &&
      attacker.named('Latios', 'Latias', 'Latios-Mega', 'Latias-Mega') &&
      move.hasType('Psychic', 'Dragon')) ||
@@ -1110,7 +1121,7 @@ export function calculateDefenseSMSS(
   isCritical = false
 ) {
   let defense: number;
-  const hitsPhysical = move.defensiveCategory === 'Physical' ||
+  const hitsPhysical = move.overrideDefensiveStat === 'def' || move.category === 'Physical' ||
     (move.named('Shell Side Arm') && getShellSideArmCategory(attacker, defender) === 'Physical');
   const defenseStat = hitsPhysical ? 'def' : 'spd';
   desc.defenseEVs = getEVDescriptionText(gen, defender, defenseStat, defender.nature);
