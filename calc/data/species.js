@@ -8904,8 +8904,8 @@ var PLA_PATCH = {
         abilities: { 0: "Overcoat" },
         weightkg: 48
     },
-    ursaring: { nfe: true },
-    stantler: { nfe: true }
+    Ursaring: { nfe: true },
+    Stantler: { nfe: true }
 };
 var SS = (0, util_1.extend)(true, {}, SM, SS_PATCH, PLA_PATCH);
 delete SS['Pikachu-Starter'];
