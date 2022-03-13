@@ -8915,8 +8915,8 @@ const PLA_PATCH: {[name: string]: DeepPartial<SpeciesData>} = {
 		abilities: {0: "Overcoat"},
 		weightkg: 48,
 	},
-  ursaring: {nfe: true},
-  stantler: {nfe: true},
+  Ursaring: {nfe: true},
+  Stantler: {nfe: true},
 };
 
 const SS: {[name: string]: SpeciesData} = extend(true, {}, SM, SS_PATCH, PLA_PATCH);
